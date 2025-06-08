@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snap Case - Bắt Trọn Khoảnh Khắc, Bảo Vệ Tối Đa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Clean & Bright (White, Light Gray, Bright Blue) -->
+    <!-- Application Structure Plan: Giữ nguyên cấu trúc SPA nhưng đã thay đổi hoàn toàn bảng màu sang tông sáng theo yêu cầu. Thanh điều hướng được sắp xếp lại để "Giới Thiệu" đứng trước "Sản Phẩm". Các thành phần giao diện như nền, chữ, nút, modal đều được thiết kế lại để đảm bảo tính thẩm mỹ, dễ đọc và chuyên nghiệp trên nền sáng. -->
+    <!-- Visualization & Content Choices: Các lựa chọn hiển thị và tương tác được giữ nguyên về chức năng nhưng được làm mới về giao diện để phù hợp với chủ đề sáng. Ví dụ: modal giờ đây có nền trắng, chữ tối màu để tăng độ tương phản. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #F9FAFB; /* Light Gray */
+            color: #1F2937; /* Dark Gray */
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 900;
+        }
+        .font-times {
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+            color: #4B5563; /* Gray-600 */
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #2563EB; /* Bright Blue */
+            transition: width 0.3s ease;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #1D4ED8; /* Darker Blue */
+        }
+        .nav-link.active::after, .nav-link:hover::after {
+            width: 100%;
+        }
+        .light-glassmorphism {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .loader {
+            border: 4px solid #E5E7EB; /* Gray-200 */
+            border-top: 4px solid #3B82F6; /* Bright Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="light-glassmorphism sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="text-3xl font-black tracking-tighter text-gray-800">SNAP CASE</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#about" class="nav-link">Giới Thiệu</a>
+                <a href="#products" class="nav-link">Sản Phẩm</a>
+                <a href="#review" class="nav-link">Review</a>
+                <a href="#contact" class="nav-link">Liên Hệ</a>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden text-2xl text-gray-800">☰</button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden light-glassmorphism py-4">
+            <a href="#about" class="block text-center py-2 text-lg text-gray-700">Giới Thiệu</a>
+            <a href="#products" class="block text-center py-2 text-lg text-gray-700">Sản Phẩm</a>
+            <a href="#review" class="block text-center py-2 text-lg text-gray-700">Review</a>
+            <a href="#contact" class="block text-center py-2 text-lg text-gray-700">Liên Hệ</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="relative min-h-screen flex items-center justify-center text-center">
+            <div class="absolute inset-0 bg-black opacity-40"></div>
+            <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-man-talking-on-the-phone-in-an-art-gallery-4375-large.mp4" type="video/mp4">
+            </video>
+            <div class="relative z-10 px-4 text-white">
+                <div id="holiday-greeting" class="mb-4 text-lg bg-white/20 text-white py-2 px-5 rounded-full inline-block border border-white/50">
+                    <!-- Holiday greeting will be inserted here -->
+                </div>
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-times font-bold mb-4 uppercase tracking-tighter">Bắt trọn khoảnh khắc</h1>
+                <p class="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-200">Ốp lưng iPhone không chỉ để bảo vệ. Đó là phong cách, là cá tính.</p>
+                <a href="#products" class="bg-blue-600 text-white py-4 px-10 rounded-lg text-lg font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">XEM TẤT CẢ SẢN PHẨM</a>
+            </div>
+        </section>
+
+        <!-- Featured Products Section -->
+        <section id="featured-products" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl md:text-5xl font-black text-gray-800">Sản Phẩm Nổi Bật</h2>
+                    <p class="text-lg mt-2 text-gray-600">Những thiết kế được săn đón nhất tuần qua.</p>
+                </div>
+                <div id="featured-product-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                     <!-- Featured products will be injected here -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- About Section -->
+        <section id="about" class="py-20">
+            <div class="container mx-auto px-6">
+                 <div class="text-center mb-12">
+                    <h2 class="text-4xl md:text-5xl font-black text-gray-800">Về Snap Case</h2>
+                </div>
+                <div class="max-w-4xl mx-auto text-lg leading-relaxed text-gray-700 text-center">
+                    <p class="mb-4">Thành lập từ năm 2020, <strong class="text-gray-900">Snap Case</strong> ra đời với một sứ mệnh đơn giản: mang đến những chiếc <strong class="text-gray-900">ốp lưng iPhone</strong> không chỉ có khả năng <strong class="text-gray-900">bảo vệ vượt trội</strong> mà còn là một phụ kiện thời trang thể hiện cá tính riêng của người dùng. Chúng tôi tin rằng, một chiếc ốp lưng chất lượng cao là khoản đầu tư thông minh cho thiết bị của bạn.</p>
+                    <p>Tại Snap Case, chúng tôi tập trung vào ba yếu tố cốt lõi: <strong class="text-gray-900">Thiết kế độc đáo</strong>, <strong class="text-gray-900">Chất liệu bền bỉ</strong> và <strong class="text-gray-900">Trải nghiệm khách hàng tuyệt vời</strong>. Mỗi sản phẩm ốp lưng iPhone của chúng tôi đều được kiểm tra kỹ lưỡng để đảm bảo vừa vặn hoàn hảo và bảo vệ điện thoại của bạn an toàn trước mọi va đập.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl md:text-5xl font-black text-gray-800">Bộ Sưu Tập Ốp Lưng</h2>
+                    <p class="text-lg mt-2 text-gray-600">Tìm kiếm chiếc ốp hoàn hảo cho dế yêu của bạn.</p>
+                     <button id="ai-advisor-btn" class="mt-6 bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-3 px-8 rounded-full text-lg font-semibold hover:opacity-90 transition-opacity shadow-lg">
+                        ✨ Tìm ốp lưng với AI
+                    </button>
+                </div>
+                
+                <div class="flex justify-center flex-wrap gap-4 mb-12">
+                    <button class="filter-btn active" data-filter="all">Tất Cả</button>
+                    <button class="filter-btn" data-filter="iPhone 15">iPhone 15</button>
+                    <button class="filter-btn" data-filter="iPhone 14">iPhone 14</button>
+                    <button class="filter-btn" data-filter="iPhone 13">iPhone 13</button>
+                </div>
+
+                <div id="product-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    <!-- Products will be injected here by JavaScript -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Brand Review Video Section -->
+        <section id="review" class="py-20">
+             <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl md:text-5xl font-black text-gray-800">Khách Hàng Nói Gì Về Snap Case?</h2>
+                     <p class="text-lg mt-2 text-gray-600">Xem video review chân thực từ cộng đồng người dùng.</p>
+                </div>
+                <div class="aspect-w-16 aspect-h-9 max-w-xl mx-auto rounded-lg overflow-hidden shadow-2xl">
+                    <iframe src="https://www.youtube.com/embed/cOuO5A9TEKw" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+                </div>
+             </div>
+        </section>
+
+        <!-- Contact & Footer -->
+        <footer id="contact" class="py-20 bg-white border-t border-gray-200">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Liên Hệ Với Snap Case</h2>
+                <div class="flex justify-center space-x-6 text-3xl mb-8">
+                    <a href="#" class="text-gray-500 hover:text-blue-600 transition-colors">f</a>
+                    <a href="#" class="text-gray-500 hover:text-blue-600 transition-colors">i</a>
+                    <a href="#" class="text-gray-500 hover:text-blue-600 transition-colors">t</a>
+                </div>
+                <div class="text-gray-600">
+                    <p><strong>Địa chỉ:</strong> 123 Đường Công Nghệ, Quận 10, TP. Hồ Chí Minh</p>
+                    <p><strong>Email:</strong> support@snapcase.vn | <strong>Hotline:</strong> 1900 1234</p>
+                    <p class="mt-8 text-gray-500">&copy; <span id="year"></span> Snap Case. All Rights Reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Product Detail Modal -->
+    <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 hidden">
+        <div id="modal-content" class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[95vh] flex flex-col transform scale-95 opacity-0 transition-all duration-300">
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+    
+    <!-- AI Advisor Modal -->
+    <div id="ai-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-gray-800">✨ Trợ Lý AI Snap Case</h3>
+                <button id="close-ai-modal-btn" class="text-2xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <p class="mb-4 text-gray-600">Mô tả phong cách của bạn (vd: tối giản, chống sốc, trong suốt, màu sắc...), AI sẽ tìm chiếc ốp lưng hoàn hảo cho bạn!</p>
+                <textarea id="user-style-input" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg h-28 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Ví dụ: Tôi cần ốp lưng cho iPhone 15 Pro, loại siêu mỏng, trong suốt để khoe màu máy..."></textarea>
+                <button id="get-advice-btn" class="w-full mt-4 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">Tìm kiếm bằng AI</button>
+                <div id="ai-advice-result" class="mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200 min-h-[150px]">
+                    <p class="text-gray-500">Gợi ý từ AI sẽ xuất hiện ở đây...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Data ---
+            const products = [
+                { id: 1, name: 'Ốp Lưng "Trong Suốt" Chống Sốc', price: '250.000 VNĐ', category: 'iPhone 15', image: 'https://images.unsplash.com/photo-1695594589326-8653755a5b9e?q=80&w=1964&auto=format&fit=crop', video: 'https://www.youtube.com/embed/ScXX2bndGJQ', features: ['Chống sốc chuẩn quân đội', 'Vật liệu PC + TPU cao cấp', 'Không ố vàng sau thời gian dài'], specs: 'Tương thích: iPhone 15 Pro Max. Dày: 1.5mm. Trọng lượng: 25g.' },
+                { id: 2, name: 'Ốp Lưng "Da Sần" Cao Cấp', price: '450.000 VNĐ', category: 'iPhone 15', image: 'https://images.unsplash.com/photo-1695594404983-37e49788196e?q=80&w=1964&auto=format&fit=crop', video: 'https://www.youtube.com/embed/ScXX2bndGJQ', features: ['Bề mặt da PU chống bám vân tay', 'Khung viền mạ kim loại sang trọng', 'Có hỗ trợ MagSafe'], specs: 'Tương thích: iPhone 15. Chất liệu: Da PU, PC. Hỗ trợ sạc không dây.' },
+                { id: 3, name: 'Ốp Lưng "Titan" Siêu Mỏng', price: '350.000 VNĐ', category: 'iPhone 14', image: 'https://images.unsplash.com/photo-1678122493992-04e35496429f?q=80&w=1965&auto=format&fit=crop', video: 'https://www.youtube.com/embed/ScXX2bndGJQ', features: ['Thiết kế siêu mỏng, ôm sát thân máy', 'Cảm giác cầm nắm như không dùng ốp', 'Màu sắc titan đồng bộ với máy'], specs: 'Tương thích: iPhone 14 Pro. Dày: 0.8mm. Trọng lượng: 18g.' },
+                { id: 4, name: 'Ốp Lưng "Silicone" Màu Pastel', price: '200.000 VNĐ', category: 'iPhone 14', image: 'https://images.unsplash.com/photo-1697052215873-1073b8858b29?q=80&w=1964&auto=format&fit=crop', video: 'https://www.youtube.com/embed/ScXX2bndGJQ', features: ['Chất liệu silicone mềm mịn', 'Nhiều màu sắc trẻ trung', 'Lớp lót nỉ bên trong chống trầy máy'], specs: 'Tương thích: iPhone 14. Chất liệu: Silicone lỏng. Chống bẩn, dễ lau chùi.' },
+                { id: 5, name: 'Ốp Lưng "Chống Nhìn Trộm"', price: '300.000 VNĐ', category: 'iPhone 13', image: 'https://images.unsplash.com/photo-1649036993201-8381c850239c?q=80&w=1964&auto=format&fit=crop', video: 'https://www.youtube.com/embed/ScXX2bndGJQ', features: ['Kính cường lực chống nhìn trộm 2 chiều', 'Bảo vệ sự riêng tư hiệu quả', 'Khung viền nhôm chắc chắn'], specs: 'Tương thích: iPhone 13 Pro Max. Chất liệu: Kính cường lực, Hợp kim nhôm.' },
+            ];
+
+            // --- Holiday Greeting ---
+            function setHolidayGreeting() {
+                const greetingEl = document.getElementById('holiday-greeting');
+                if (!greetingEl) return;
+                const now = new Date();
+                const month = now.getMonth() + 1; 
+                const day = now.getDate();
+                let greeting = "Chào mừng bạn đến với Snap Case!";
+
+                // Father's Day (3rd Sunday in June)
+                if (month === 6) {
+                    const firstDay = new Date(now.getFullYear(), 5, 1).getDay();
+                    const thirdSunday = 22 - firstDay;
+                    if(day <= thirdSunday) {
+                       greeting = `Sắp đến Ngày của Cha (${thirdSunday}/6), Snap Case chúc bạn có những khoảnh khắc ý nghĩa!`;
+                    }
+                }
+                
+                greetingEl.textContent = greeting;
+            }
+
+            // --- Mobile Menu ---
+            document.getElementById('mobile-menu-button').addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            });
+
+            // --- Smooth Scrolling ---
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                });
+            });
+
+            // --- Active Nav Link on Scroll ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section, footer');
+            const observerOptions = { root: null, rootMargin: "-200px 0px -50% 0px", threshold: 0 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        const navLink = document.querySelector(`.nav-link[href="#${id}"]`);
+                        navLinks.forEach(link => link.classList.remove('active'));
+                        if (navLink) navLink.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+            sections.forEach(section => observer.observe(section));
+
+            // --- Product Rendering ---
+            const productGrid = document.getElementById('product-grid');
+            const featuredGrid = document.getElementById('featured-product-grid');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+
+            function createProductCard(product) {
+                return `
+                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer product-card" data-id="${product.id}">
+                        <img src="${product.image}" onerror="this.onerror=null;this.src='https://placehold.co/400x400/E5E7EB/374151?text=${encodeURIComponent(product.name)}';" alt="${product.name}" class="w-full h-80 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2 truncate text-gray-800">${product.name}</h3>
+                            <p class="text-lg font-semibold text-blue-600">${product.price}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderProducts(filter = 'all') {
+                productGrid.innerHTML = '';
+                products
+                    .filter(p => filter === 'all' || p.category === filter)
+                    .forEach(product => productGrid.innerHTML += createProductCard(product));
+                addProductCardListeners();
+            }
+            
+            function renderFeaturedProducts() {
+                featuredGrid.innerHTML = '';
+                products.slice(0, 3).forEach(product => featuredGrid.innerHTML += createProductCard(product));
+                addProductCardListeners();
+            }
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderProducts(btn.dataset.filter);
+                });
+            });
+            
+            // --- Product Detail Modal ---
+            const productModal = document.getElementById('product-modal');
+            const modalContent = document.getElementById('modal-content');
+
+            function addProductCardListeners() {
+                document.querySelectorAll('.product-card').forEach(card => {
+                    card.addEventListener('click', () => openProductModal(card.dataset.id));
+                });
+            }
+
+            function openProductModal(productId) {
+                const product = products.find(p => p.id == productId);
+                if (!product) return;
+
+                modalContent.innerHTML = `
+                    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-2xl font-bold text-gray-800">${product.name}</h3>
+                        <button id="close-product-modal-btn" class="text-3xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
+                    </div>
+                    <div class="p-6 grid md:grid-cols-2 gap-8 overflow-y-auto">
+                        <div>
+                            <img src="${product.image}" onerror="this.onerror=null;this.src='https://placehold.co/600x600/E5E7EB/374151?text=${encodeURIComponent(product.name)}';" alt="${product.name}" class="w-full rounded-lg object-cover">
+                        </div>
+                        <div class="text-gray-700">
+                            <div class="mb-4">
+                                <span class="text-3xl font-bold text-blue-600">${product.price}</span>
+                            </div>
+                            <!-- Tabs -->
+                            <div class="border-b border-gray-200 mb-4">
+                                <nav class="-mb-px flex space-x-6" id="modal-tabs">
+                                    <button data-tab="features" class="modal-tab active py-3 px-1 border-b-2 font-semibold border-blue-600 text-blue-600">Đặc Tính</button>
+                                    <button data-tab="specs" class="modal-tab py-3 px-1 border-b-2 font-semibold border-transparent text-gray-500 hover:text-gray-800">Thông Số</button>
+                                    <button data-tab="video" class="modal-tab py-3 px-1 border-b-2 font-semibold border-transparent text-gray-500 hover:text-gray-800">Video</button>
+                                </nav>
+                            </div>
+                            <div id="modal-tab-content">
+                                <!-- Tab content injected by JS -->
+                            </div>
+                            <!-- Order Form -->
+                            <div class="mt-6">
+                                <h4 class="font-bold text-xl mb-4 text-gray-800">Form Đặt Hàng</h4>
+                                <form id="order-form">
+                                    <input type="text" placeholder="Họ và Tên" class="w-full p-3 mb-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                                    <input type="tel" placeholder="Số Điện Thoại" class="w-full p-3 mb-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                                    <textarea placeholder="Địa chỉ nhận hàng" class="w-full p-3 mb-3 bg-gray-50 border border-gray-300 rounded-lg h-20 focus:ring-2 focus:ring-blue-500 focus:outline-none" required></textarea>
+                                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors">ĐẶT HÀNG NGAY</button>
+                                </form>
+                                <p id="order-form-message" class="text-center mt-3 text-green-600"></p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                productModal.classList.remove('hidden');
+                setTimeout(() => modalContent.classList.remove('opacity-0', 'scale-95'), 10);
+                
+                document.getElementById('close-product-modal-btn').addEventListener('click', closeProductModal);
+                setupModalTabs(product);
+                document.getElementById('order-form').addEventListener('submit', handleOrderSubmit);
+            }
+            
+            function closeProductModal() {
+                 modalContent.classList.add('opacity-0', 'scale-95');
+                 setTimeout(() => productModal.classList.add('hidden'), 300);
+            }
+            
+            productModal.addEventListener('click', (e) => {
+                if (e.target === productModal) closeProductModal();
+            });
+            
+            function setupModalTabs(product) {
+                const tabButtons = document.querySelectorAll('.modal-tab');
+                const tabContentContainer = document.getElementById('modal-tab-content');
+                const tabContents = {
+                    features: `<ul>${product.features.map(f => `<li class="flex items-start mb-2"><span class="text-blue-600 mr-2 mt-1">✓</span><span>${f}</span></li>`).join('')}</ul>`,
+                    specs: `<p>${product.specs}</p>`,
+                    video: `<div class="aspect-w-16 aspect-h-9"><iframe src="${product.video}" frameborder="0" allowfullscreen class="w-full h-full rounded"></iframe></div>`
+                };
+                
+                function switchTab(tabName) {
+                    tabContentContainer.innerHTML = tabContents[tabName];
+                    tabButtons.forEach(btn => {
+                        const isActive = btn.dataset.tab === tabName;
+                        btn.classList.toggle('active', isActive);
+                        btn.classList.toggle('border-blue-600', isActive);
+                        btn.classList.toggle('text-blue-600', isActive);
+                        btn.classList.toggle('border-transparent', !isActive);
+                        btn.classList.toggle('text-gray-500', !isActive);
+                    });
+                }
+                
+                tabButtons.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+                switchTab('features');
+ }
+            
+            function handleOrderSubmit(e) {
+                e.preventDefault();
+                const messageEl = document.getElementById('order-form-message');
+                messageEl.textContent = 'Đặt hàng thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.';
+                e.target.reset();
+                setTimeout(() => messageEl.textContent = '', 3000);
+            }
+            
+             // --- AI Advisor Modal Logic ---
+            const aiAdvisorBtn = document.getElementById('ai-advisor-btn');
+            const aiModal = document.getElementById('ai-modal');
+            const closeAiModalBtn = document.getElementById('close-ai-modal-btn');
+            const getAdviceBtn = document.getElementById('get-advice-btn');
+            const userStyleInput = document.getElementById('user-style-input');
+            const aiAdviceResult = document.getElementById('ai-advice-result');
+
+            aiAdvisorBtn.addEventListener('click', () => aiModal.classList.remove('hidden'));
+            closeAiModalBtn.addEventListener('click', () => aiModal.classList.add('hidden'));
+            aiModal.addEventListener('click', (e) => {
+                if (e.target === aiModal) aiModal.classList.add('hidden');
+            });
+            
+            async function callGeminiAPI(prompt) {
+                const apiKey = ""; // Leave empty, handled by environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                try {
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`API call failed: ${response.status}`);
+                    const result = await response.json();
+                    if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        return result.candidates[0].content.parts[0].text;
+                    }
+                    return "Rất tiếc, AI không thể đưa ra câu trả lời lúc này.";
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    return "Đã xảy ra lỗi khi kết nối với AI.";
+                }
+            }
+
+            getAdviceBtn.addEventListener('click', async () => {
+                const userInput = userStyleInput.value.trim();
+                if (!userInput) {
+                    aiAdviceResult.innerHTML = '<p class="text-red-500">Vui lòng mô tả phong cách của bạn.</p>';
+                    return;
+                }
+                aiAdviceResult.innerHTML = '<div class="flex justify-center items-center"><div class="loader"></div></div>';
+                const productList = JSON.stringify(products.map(p => ({name: p.name, features: p.features.join(', ')})));
+                const prompt = `Bạn là chuyên gia tư vấn ốp lưng iPhone tại cửa hàng Snap Case. Dựa trên danh sách sản phẩm sau: ${productList}. Hãy tư vấn cho khách hàng có nhu cầu: "${userInput}". Đề xuất 1 sản phẩm phù hợp nhất và giải thích ngắn gọn lý do tại sao, giọng văn sành điệu, chuyên nghiệp.`;
+                const response = await callGeminiAPI(prompt);
+                aiAdviceResult.innerHTML = response.replace(/\n/g, '<br>');
+            });
+
+            // --- Initial Render ---
+            setHolidayGreeting();
+            document.getElementById('year').textContent = new Date().getFullYear();
+            renderProducts();
+            renderFeaturedProducts();
+
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .filter-btn { padding: 0.5rem 1.5rem; border-radius: 9999px; font-weight: 600; transition: all 0.3s ease; border: 2px solid #D1D5DB; color: #6B7280; }
+                .filter-btn:hover { border-color: #9CA3AF; color: #374151; }
+                .filter-btn.active { background-color: #3B82F6; color: white; border-color: #3B82F6; }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
